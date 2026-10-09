@@ -1,0 +1,6 @@
+<network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'>
+  <name>harvester</name>
+  <bridge name="virbr1"/>
+  <dns enable="no"/>
+  <ip address="192.168.200.1" netmask="255.255.255.0"/>
+</network>

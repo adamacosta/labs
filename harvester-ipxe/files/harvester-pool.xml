@@ -1,0 +1,6 @@
+<pool type='dir'>
+  <name>harvester</name>
+  <target>
+    <path>/var/lib/libvirt/images/harvester</path>
+  </target>
+</pool>

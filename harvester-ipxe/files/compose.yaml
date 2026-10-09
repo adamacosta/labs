@@ -1,0 +1,38 @@
+name: gateway
+
+services:
+  dhcp:
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    image: dockurr/dnsmasq:2.93
+    network_mode: host
+    volumes:
+      - type: bind
+        source: ./dnsmasq.conf
+        target: /etc/dnsmasq.conf
+        read_only: true
+      - type: bind
+        source: ./tftp/ipxe.efi
+        target: /srv/tftp/ipxe.efi
+        read_only: true
+  
+  http:
+    image: nginx:1.31
+    network_mode: host
+    volumes:
+      - type: bind
+        source: ./html
+        target: /usr/share/nginx/html
+        read_only: true
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+  
+  ntp:
+    environment:
+      - "ALLOW=192.168.200.0/24"
+      - "NTP_DIRECTIVES=bindaddress 192.168.200.1"
+    image: dockurr/chrony:4.9
+    network_mode: host

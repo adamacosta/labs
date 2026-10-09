@@ -1,0 +1,20 @@
+scheme_version: 1
+server_url: https://192.168.200.10:443
+token: supersecuretoken
+os:
+  hostname: hvst-2
+  ntp_servers:
+    - 192.168.200.1
+  password: rancher
+install:
+  data_disk: dev/vdb
+  device: /dev/vda
+  iso_url: http://192.168.200.1/harvester-v1.9.0-govt.experimental.2-amd64.iso
+  mode: join
+  management_interface:
+    interfaces:
+      - name: enp1s0
+      - name: enp2s0
+    method: dhcp
+  skipchecks: true
+  wipe_all_disks: true

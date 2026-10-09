@@ -1,0 +1,17 @@
+#!ipxe
+
+set harvester_version v1.9.0-govt.experimental.2
+set server_ip 192.168.200.1
+
+kernel http://${server_ip}/harvester-${harvester_version}-vmlinuz-amd64 \
+    ip=dhcp \
+    console=tty1 \
+    net.ifnames=1 \
+    rd.cos.disable \
+    rd.noverifyssl \
+    root=live:http://${server_ip}/harvester-${harvester_version}-rootfs-amd64.squashfs \
+    harvester.install.config_url=http://${server_ip}/hvst-2.yaml \
+    harvester.install.skipchecks=true \
+    harvester.install.automatic=true
+initrd http://${server_ip}/harvester-${harvester_version}-initrd-amd64
+boot
