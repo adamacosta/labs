@@ -9,6 +9,7 @@ SCRIPTS_ROOT="$(dirname "$(realpath "$0")")"
 check_commands() {
     command -v curl >/dev/null || fatal "curl not found"
     command -v docker >/dev/null || command -v podman || fatal "docker or podman not found"
+    command -v sshpass >/dev/null || fatal "sshpass not found"
     command -v virsh >/dev/null || fatal "virsh not found"
     command -v virt-install >/dev/null || fatal "virt-install not found"
 }
