@@ -1,0 +1,6 @@
+<pool type='dir'>
+  <name>harvester-data</name>
+  <target>
+    <path>/var/lib/libvirt/data/harvester</path>
+  </target>
+</pool>

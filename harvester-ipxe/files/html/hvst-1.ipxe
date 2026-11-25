@@ -1,6 +1,6 @@
 #!ipxe
 
-set harvester_version v1.9.0-govt.experimental.2
+set harvester_version v1.9.1-govt.1
 set server_ip 192.168.200.1
 
 kernel http://${server_ip}/harvester-${harvester_version}-vmlinuz-amd64 \

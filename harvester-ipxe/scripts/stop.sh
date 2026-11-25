@@ -36,10 +36,10 @@ destroy_net() {
 }
 
 destroy_pool() {
-    if virsh pool-list | grep -q 'harvester'; then
+    if virsh pool-list | grep -q 'harvester '; then
         virsh pool-destroy harvester
     fi
-    if virsh pool-list --all | grep -q 'harvester'; then
+    if virsh pool-list --all | grep -q 'harvester '; then
         virsh pool-undefine harvester
     fi
     if [ -d /var/lib/libvirt/images/harvester/ ]; then
@@ -47,8 +47,21 @@ destroy_pool() {
     fi
 }
 
+destroy_data_pool() {
+    if virsh pool-list | grep -q 'harvester-data'; then
+        virsh pool-destroy harvester-data
+    fi
+    if virsh pool-list --all | grep -q 'harvester-data'; then
+        virsh pool-undefine harvester-data
+    fi
+    if [ -d /var/lib/libvirt/data/harvester/ ]; then
+	sudo rm -rf /var/lib/libvirt/data/harvester/
+    fi
+}
+
 destroy_domains
 destroy_pool
+destroy_data_pool
 
 if [ "$ARG" = "--net" ] || [ "$ARG" = "--all" ]; then
     destroy_net

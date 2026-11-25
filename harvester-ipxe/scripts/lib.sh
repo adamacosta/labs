@@ -1,3 +1,5 @@
+#!/bin/sh
+
 info() {
     echo "[INFO] $1"
 }

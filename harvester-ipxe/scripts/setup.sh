@@ -13,7 +13,7 @@ touch "$HOME/.config/libvirt/libvirt.conf"
 grep -q 'uri_default = "qemu:///system"' "$HOME/.config/libvirt/libvirt.conf" || \
     echo 'uri_default = "qemu:///system"' >> "$HOME/.config/libvirt/libvirt.conf"
 
-systemctl is-enabled -q docker || sudo ystemctl enable --now docker
+systemctl is-enabled -q docker || sudo systemctl enable --now docker
 systemctl is-enabled -q libvirtd || sudo systemctl enable --now libvirtd
 systemctl is-active -q firewalld && sudo systemctl stop firewalld
 

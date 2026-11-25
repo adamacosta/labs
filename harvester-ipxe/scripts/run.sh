@@ -14,10 +14,10 @@ install_domain() {
         --boot "uefi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no" \
         --console "type=pty,target.type=serial" \
         --cpu host-passthrough \
-        --disk "pool=harvester,bus=virtio,size=180,sparse=no" \
-        --disk "pool=harvester,bus=virtio,size=50,sparse=no" \
+        --disk "pool=harvester,bus=virtio,size=256,sparse=no" \
+        --disk "pool=harvester-data,bus=virtio,size=256,sparse=no" \
         --graphics "vnc,listen=0.0.0.0,password=${VNC_PASSWORD},port=590${1}" \
-        --memory 32768 \
+        --memory 16384 \
         --name "hvst-$1" \
         --network "bridge=virbr1,mac=52:54:00:00:00:${1}1,model=virtio" \
         --network "bridge=virbr1,mac=52:54:00:00:00:${1}2,model=virtio" \
@@ -52,9 +52,9 @@ start_network() {
 
 start_pool() {
     # already active
-    virsh pool-list | grep -q 'harvester' && return
+    virsh pool-list | grep -q 'harvester ' && return
     # defined but inactive
-    if virsh pool-list --all | grep -q 'harvester'; then
+    if virsh pool-list --all | grep -q 'harvester '; then
         virsh pool-start --pool harvester
     # not defined
     else
@@ -64,8 +64,23 @@ start_pool() {
     fi
 }
 
+start_data_pool() {
+    # already active
+    virsh pool-list | grep -q 'harvester-data' && return
+    # defined but inactive
+    if virsh pool-list --all | grep -q 'harvester-data'; then
+        virsh pool-start --pool harvester-data
+    # not defined
+    else
+        virsh pool-define "$(pwd)/files/data-pool.xml"
+        virsh pool-build --pool harvester-data
+        virsh pool-start --pool harvester-data
+    fi
+}
+
 start_network
 start_pool
+start_data_pool
 
 VNC_PASSWORD="$(tr -cd '[:alnum:]' </dev/random | head -c 8)"
 
@@ -97,7 +112,8 @@ sshpass -p "rancher" \
     >"$(pwd)/harvester.yaml"
 
 chmod 0600 "$(pwd)/harvester.yaml"
-export KUBECONFIG="$(pwd)/harvester.yaml"
+KUBECONFIG="$(pwd)/harvester.yaml"
+export KUBECONFIG
 
 kubectl rollout status deployment/rancher --namespace cattle-system
 
@@ -146,3 +162,22 @@ curl -k "https://192.168.200.10/v1/userpreferences/$USER" \
     -H "Accept: application/json" \
     -H "Content-Type: application/json" \
     --data-raw "$PREFS"
+
+# Allow Longhorn to take over unused disks
+kubectl apply -f -<<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: harvester-node-disk-manager
+  namespace: harvester-system
+data:
+  autoprovision.yaml: |
+    - hostname: "*"
+      devices:
+        - /dev/vdb
+  filters.yaml: |
+    - hostname: "*"
+      excludeLabels:
+        - "COS_*"
+        - "HARV_*"
+EOF
